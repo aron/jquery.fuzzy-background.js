@@ -231,11 +231,30 @@
    */
 
   $.fuzzyBackground.supported = (function () {
-    var canvas    = document.createElement('canvas'),
-        supported = !!(canvas.getContext && canvas.getContext('2d'));
+    var canvas = document.createElement('canvas'),
+        canvas_supported = !!(canvas.getContext && canvas.getContext('2d')),
+        background_supported = false,
+        element = document.documentElement,
+        styles = {};
+
+    if (window.getComputedStyle) {
+      styles = window.getComputedStyle(element, null);
+    }
+    else if (element.currentStyle) {
+      styles = element.currentStyle;
+    }
+
+    $.each(
+      ['backgroundSize', 'MozBackgroundSize', 'WebkitBackgroundSize'],
+      function () {
+        if (this in styles) {
+          background_supported = true;
+        }
+      }
+    );
 
     return function () {
-      return supported;
+      return canvas_supported && background_supported;
     };
   })();
 
